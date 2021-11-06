@@ -1,39 +1,41 @@
-#include <FirebaseArduino.h>
+#include <FirebaseESP8266.h>
 #include <ESP8266WiFi.h>
 
-#define WIFI_SSID         "input here"         // ชื่อ Wifi  
-#define WIFI_PASSWORD     "input here"         // รหัสผ่าน Wifi
-#define FIREBASE_HOST     "input here"         // URL Firebase
-#define FIREBASE_AUTH     "input here"         // Key ลับของ Firebase
+#define WIFI_SSID "" // YOU SSID
+#define WIFI_PASSWORD "" // YOU PASSWORD
+
+#define FIREBASE_HOST "" // YOU HOST KEY
+#define FIREBASE_KEY "" // YOU FIREBASE KEY
 
 #define ledPin D0
 
 void setup() {
-  Serial.begin(9600);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("connecting");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(500);
-  }
-  Serial.println();
-  Serial.print("connected: ");
-  Serial.println(WiFi.localIP());
+    Serial.begin(9600);
+    Serial.println(WiFi.localIP());
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    Serial.print("connecting");
+    while (WiFi.status() != WL_CONNECTED) {
+        Serial.print(".");
+        delay(500);
+    }
+    Serial.println();
+    Serial.print("connected: ");
+    Serial.println(WiFi.localIP());
 
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  pinMode(ledPin, OUTPUT);
+    Firebase.begin(FIREBASE_HOST, FIREBASE_KEY);
 }
 
 void loop() {
-  String ledStatus = Firebase.getString("ledStatus");
-  
-  if(ledStatus == "1"){
-    digitalWrite(ledPin, HIGH);
-  } else {
-    digitalWrite(ledPin, LOW);
-  }
-  Serial.println(ledStatus);
-  
-  //set data:
-  //Firebase.setInt("ledStatus", 1);
+    FirebaseData FB_DATA;
+
+    Serial.println("=========");
+    if(Firebase.getString(FB_DATA, "/Bed Room/LED")) {
+      if (FB_DATA.stringData() == "1"){
+        Serial.println("LED IS ON !");
+        digitalWrite(ledPin, HIGH);
+      } else {
+        Serial.println("LED IS OFF !");
+        digitalWrite(ledPin, LOW);
+      }
+    }
 }
