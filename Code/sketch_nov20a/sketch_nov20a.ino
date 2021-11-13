@@ -10,6 +10,7 @@
 #define ledPin D0
 
 void setup() {
+    pinMode(ledPin, OUTPUT);
     Serial.begin(9600);
     Serial.println(WiFi.localIP());
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
